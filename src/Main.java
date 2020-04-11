@@ -146,7 +146,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        String filename = "src/input.txt";
+        String filename = "src/input.txt.TXT";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
@@ -157,11 +157,12 @@ public class Main {
         }
         System.out.println();
 
+
         System.out.println("Decoded in bytes: ");
         decode(input);
         System.out.println("Decoded in binary: ");
         System.out.println(binary);
-
+        System.out.println(BitArray.parse(binary));
         System.out.println("Encoded in bytes: ");
         encode();
     }
