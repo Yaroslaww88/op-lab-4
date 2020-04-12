@@ -226,7 +226,7 @@ public class Main {
         /**
          * get next wordLength chars and delete them from the beginning
          */
-        if (binary.length() == 0)
+        if (binary.length() == 0 || binary.length() < wordLength)
             return -1;
 
         while (binary.length() < wordLength)
@@ -380,9 +380,18 @@ public class Main {
 
         OutputStream outputLZWStream = new BufferedOutputStream(new FileOutputStream("./src/archive.lzw"));
         ArrayList<Byte> encoding = new ArrayList<>();
-        while (binary.length() % 8 != 0)
-            binary += "0";
+        //while (binary.length() % 8 != 0)
+        //    binary += "0";
         for (int i = 0; i < binary.length(); i += 8) {
+            if (i + 8 >= binary.length()) {
+                String currentByte = binary.substring(i);
+                while (currentByte.length() < 8)
+                    currentByte = currentByte + "0";
+                Byte bb = getByteFromBinary(currentByte);
+                //System.out.println(bb);
+                encoding.add(bb);
+                break;
+            }
             String currentByte = binary.substring(i, i + 8);
             //System.out.println(currentByte);
             Byte bb = getByteFromBinary(currentByte);
