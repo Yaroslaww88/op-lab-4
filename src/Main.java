@@ -2,15 +2,35 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BinaryOperator;
 
 public class Main {
 
     static String binary = "";
 
-    public static void decode(ArrayList<Byte> inputBytes) {
-        int tableSize =  127;
+    /**
+     * Calculate word length for given integer (used to expand table)
+     * Ex: 1025 - 10
+     *     1023 - 9
+     * @param integer
+     * @return
+     */
+    public static Integer calcWordLength(Integer integer) {
+        int pw = 1;
+        // 32 - max word length
+        for (int i = 0; i < 32; i++) {
+            if (pw >= integer)
+                return i;
+            pw *= 2;
+        }
+        return 0;
+    }
 
-        TreeMap<ArrayList<Byte>, Integer> table = new TreeMap<ArrayList<Byte>, Integer>(new Comparator<ArrayList<Byte>>() {
+    public static void decode(ArrayList<Byte> inputBytes) {
+        int tableSize =  256;
+        int wordLength = 8; //Word length in bits
+
+        TreeMap<ArrayList<Byte>, BitArray> table = new TreeMap<ArrayList<Byte>, BitArray>(new Comparator<ArrayList<Byte>>() {
             @Override
             public int compare(ArrayList<Byte> o1, ArrayList<Byte> o2) {
                 for (int i=0; i<Math.min(o1.size(), o2.size()); i++) {
@@ -28,12 +48,18 @@ public class Main {
         });
 
         Integer k = 0;
+        //TODO fix upper limit to 256
         for (Byte i = 0; i < 127 ; i++) {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
-            table.put(arr, k);
+            table.put(arr, new BitArray(wordLength, k));
             k++;
         }
+
+        /**
+         * init word length and table size
+         */
+        wordLength = 9;
 
         ArrayList<Byte> currentBytes = new ArrayList<>();
         currentBytes.add(inputBytes.get(0));
@@ -52,8 +78,8 @@ public class Main {
             if (table.containsKey(tempCurrentBytes)) {
                 currentBytes.add(b);
             } else {
-                System.out.print((table.get(currentBytes)) + " ");
-                binary += String.format("%8s", Integer.toBinaryString(table.get(currentBytes))).replace(' ', '0') + " "; //TODO remove (only for testing)
+                System.out.print(table.get(currentBytes).getValue() + " ");
+                binary += table.get(currentBytes).getValue() + " "; //TODO remove (only for testing)
                 currentBytes.add(b);
 
                 //TODO: fix (do not create copy of array each time)
@@ -61,8 +87,9 @@ public class Main {
                 for (Byte b1 : currentBytes)
                     arrayToPut.add(b1);
 
-                table.put(arrayToPut, tableSize);
+                table.put(arrayToPut, new BitArray(wordLength, tableSize));
                 tableSize++;
+                wordLength = calcWordLength(tableSize);
 
                 currentBytes.clear();
                 currentBytes.add(b);
@@ -71,25 +98,25 @@ public class Main {
         //TODO fix (do not print last byte without it)
         currentBytes.clear();
         currentBytes.add(inputBytes.get(inputBytes.size() - 1));
-        System.out.println(table.get(currentBytes));
-        binary += String.format("%8s", Integer.toBinaryString(table.get(currentBytes))).replace(' ', '0') + " "; //TODO remove (only for testing)
+        System.out.println(table.get(currentBytes).getValue());
+        binary += table.get(currentBytes).getValue() + " "; //TODO remove (only for testing)
     }
 
     public static void encode() {
-        int tableSize =  127;
+        int tableSize =  256;
+        int wordLength = 8; //Word length in bits
 
-        TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
+        TreeMap<BitArray, ArrayList<Byte>> table = new TreeMap<BitArray, ArrayList<Byte>>();
 
         Integer k = 0;
         for (Byte i = 0; i < 127 ; i++) {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
-            table.put(k, arr);
+            table.put(new BitArray(wordLength, k), arr);
             k++;
         }
 
         String byteString = "";
-        int WORD_LENGTH = 8; //TODO will be dynamic when 9-10-11-bit words work
         ArrayList<Integer> bytes = new ArrayList<>(); //Contains codes not bytes
         for (char c : binary.toCharArray()) {
             if (c != ' ') {
@@ -102,17 +129,24 @@ public class Main {
             }
         }
 
+        /**
+         * init word length and table size
+         */
+        wordLength = 9;
+
         boolean isZeroIndex = true;
-        System.out.print(table.get(bytes.get(0)).get(0) + " ");
+        //System.out.print(table.get(bytes.get(0)).get(0) + " ");
         ArrayList<Byte> currentBytes = new ArrayList<>();
-        Integer oldToken = bytes.get(0);
+        BitArray oldToken = new BitArray(wordLength, bytes.get(0));
         Byte C = 0; //TODO rename
-        for (Integer currentToken : bytes) {
+        for (Integer currentByte : bytes) {
             //Skip first symbol
             if (isZeroIndex) {
                 isZeroIndex = false;
                 continue;
             }
+
+            BitArray currentToken = new BitArray(wordLength, currentByte);
 
             if (!table.containsKey(currentToken)) {
                 currentBytes = new ArrayList<>();
@@ -133,7 +167,7 @@ public class Main {
             for (Byte b : table.get(oldToken))
                 arrayToPut.add(b);
             arrayToPut.add(C);
-            table.put(tableSize, arrayToPut);
+            table.put(new BitArray(calcWordLength(tableSize), tableSize), arrayToPut);
             //System.out.println();
             //System.out.println("PUT " + tableSize + " " + arrayToPut.toString());
             tableSize++;
@@ -146,7 +180,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        String filename = "src/input.txt.TXT";
+        String filename = "./src/input.txt";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
@@ -162,7 +196,6 @@ public class Main {
         decode(input);
         System.out.println("Decoded in binary: ");
         System.out.println(binary);
-        System.out.println(BitArray.parse(binary));
         System.out.println("Encoded in bytes: ");
         encode();
     }
