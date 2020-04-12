@@ -122,7 +122,7 @@ public class Main {
         });
 
         Integer k = 0;
-        for (Byte i = -128; i < 127 ; i++) {
+        for (Byte i = -127; i < 127 ; i++) {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
             //Add alphabet (of bytes) in table
@@ -190,8 +190,8 @@ public class Main {
             }
         }
         //TODO fix (do not print last byte without it)
-        currentBytes.clear();
-        currentBytes.add(inputBytes.get(inputBytes.size() - 1));
+        //currentBytes.clear();
+        //currentBytes.add(inputBytes.get(inputBytes.size() - 1));
         //TODO ended
         //System.out.println(getBinaryWithGivenWordLength(tableSize, table.get(currentBytes)));
         /**
@@ -246,7 +246,7 @@ public class Main {
         TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
 
         Integer k = 0;
-        for (Byte i = -128; i < 127; i++) {
+        for (Byte i = -127; i < 127; i++) {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
             table.put(k++, arr);
@@ -385,6 +385,7 @@ public class Main {
         for (int i = 0; i < binary.length(); i += 8) {
             if (i + 8 >= binary.length()) {
                 String currentByte = binary.substring(i);
+                System.out.println("dsadas  " + currentByte);
                 while (currentByte.length() < 8)
                     currentByte = currentByte + "0";
                 Byte bb = getByteFromBinary(currentByte);
