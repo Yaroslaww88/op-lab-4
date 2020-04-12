@@ -2,27 +2,39 @@ import java.util.ArrayList;
 
 public class BitArray implements Comparable {
 
-    private String value = ""; //Binary string in Big-Endian
+    private String stringValue = ""; //Binary string in Big-Endian
+    Integer length = 0;
+    private Integer integerValue = 0;
 
     BitArray(Integer wordLength, Integer integer) {
         int pw = 1;
+        this.length = wordLength;
+        this.integerValue = integer;
         for (int i = 0; i < wordLength; i++) {
             pw *= 2;
         }
 
         for (int i = 0; i < wordLength; i++) {
             if (integer >= pw) {
-                value += "1";
+                stringValue += "1";
                 integer -= pw;
             } else {
-                value += "0";
+                stringValue += "0";
             }
             pw /= 2;
         }
     }
 
-    public String getValue() {
-        return value;
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public Integer getIntegerValue() {
+        return integerValue;
+    }
+
+    public Integer getLength() {
+        return length;
     }
 
     public static String parse(String input){
@@ -64,12 +76,12 @@ public class BitArray implements Comparable {
     public int compareTo(Object o) {
         BitArray ob = (BitArray) o;
 
-        if (ob.getValue() == this.value)
+        if (ob.getStringValue() == this.getStringValue())
             return 0;
-        if (ob.getValue().length() < this.value.length())
+        if (ob.getStringValue().length() < this.getStringValue().length())
             return -1;
-        if (ob.getValue().length() > this.value.length())
+        if (ob.getStringValue().length() > this.getStringValue().length())
             return 1;
-        return ob.getValue().compareTo(this.value);
+        return ob.getStringValue().compareTo(this.getStringValue());
     }
 }
