@@ -75,9 +75,9 @@ public class Main {
         return value;
     }
 
-    public static void decode(ArrayList<Byte> inputBytes) {
+    public static void encode(ArrayList<Byte> inputBytes) {
         int tableSize =  256;
-        int wordLength; //Word length in bits
+        int wordLength = 9; //Word length in bits (9 because we have 8bit alphabet)
 
         TreeMap<ArrayList<Byte>, BitArray> table = new TreeMap<ArrayList<Byte>, BitArray>(new Comparator<ArrayList<Byte>>() {
             @Override
@@ -102,20 +102,14 @@ public class Main {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
             //Add alphabet (of bytes) in table
-            table.put(arr, new BitArray(8, k));
-            k++;
+            table.put(arr, new BitArray(8, k++));
         }
-
-        /**
-         * init word length and table size
-         */
-        wordLength = 9;
 
         /**
          * max word length of outputted token (only increase)
          * if we get BitArray from string with WordLength > maxWordLength => maxWordLength := WordLength
          */
-        Integer maxWordLength = 8;
+        //Integer maxWordLength = 8;
 
         ArrayList<Byte> currentBytes = new ArrayList<>();
         currentBytes.add(inputBytes.get(0));
@@ -126,10 +120,12 @@ public class Main {
                 isZeroIndex = false;
                 continue;
             }
+
             //TODO: fix (do not create copy of array each time)
             ArrayList<Byte> tempCurrentBytes = new ArrayList<>();
             tempCurrentBytes.addAll(currentBytes);
             tempCurrentBytes.add(b);
+            //TODO ended
 
             if (table.containsKey(tempCurrentBytes)) {
                 currentBytes.add(b);
@@ -139,15 +135,17 @@ public class Main {
                  * Get value from key-value string and convert in to binary according to maxWordLength
                  */
                 BitArray bitArray = table.get(currentBytes);
-                maxWordLength = Math.max(maxWordLength, bitArray.length);
-                String binaryString = getBinaryWithGivenWordLength(maxWordLength, bitArray.getIntegerValue());
+                //maxWordLength = Math.max(wordLength, bitArray.length);
+                String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
                 binary += binaryString  + " "; //TODO remove (only for testing)
+
                 currentBytes.add(b);
 
                 //TODO: fix (do not create copy of array each time)
                 ArrayList<Byte> arrayToPut = new ArrayList<>();
                 for (Byte b1 : currentBytes)
                     arrayToPut.add(b1);
+                //TODO ended
 
                 table.put(arrayToPut, new BitArray(wordLength, tableSize));
                 tableSize++;
@@ -163,29 +161,35 @@ public class Main {
         //TODO fix (do not print last byte without it)
         currentBytes.clear();
         currentBytes.add(inputBytes.get(inputBytes.size() - 1));
+        //TODO ended
         //System.out.println(getBinaryWithGivenWordLength(tableSize, table.get(currentBytes)));
         /**
          * Get value from key-value string and convert in to binary according to maxWordLength
          */
         BitArray bitArray = table.get(currentBytes);
-        maxWordLength = Math.max(maxWordLength, bitArray.length);
-        String binaryString = getBinaryWithGivenWordLength(maxWordLength, bitArray.getIntegerValue());
+        //maxWordLength = Math.max(maxWordLength, bitArray.length);
+        String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
         binary += binaryString  + " "; //TODO remove (only for testing)
     }
 
-    public static void encode() {
+    public static void decode() {
         int tableSize =  256;
-        int wordLength = 8; //Word length in bits
+        int wordLength = 9; //Word length in bits
 
         TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
 
         Integer k = 0;
-        for (Byte i = 0; i < 127 ; i++) {
+        for (Byte i = 0; i < 127; i++) {
             ArrayList<Byte> arr = new ArrayList<>();
             arr.add(i);
-            table.put(k, arr);
-            k++;
+            table.put(k++, arr);
         }
+
+        /**
+         * max word length of outputted token (only increase)
+         * if we get BitArray from string with WordLength > maxWordLength => maxWordLength := WordLength
+         */
+        Integer maxWordLength = 8;
 
         String byteString = "";
         ArrayList<Integer> bytes = new ArrayList<>(); //Contains codes not bytes
@@ -266,10 +270,10 @@ public class Main {
 
 
         System.out.println("Decoded in bytes: ");
-        decode(input);
+        encode(input);
         System.out.println("Decoded in binary: ");
         System.out.println(binary);
         System.out.println("Encoded in bytes: ");
-        encode();
+        decode();
     }
 }
