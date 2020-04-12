@@ -9,6 +9,7 @@ import java.util.function.BinaryOperator;
 public class Main {
 
     static String binary = "";
+    static ArrayList<Byte> byteArrayList = new ArrayList<>();
 
     /**
      * Calculate word length for given integer (used to expand table)
@@ -137,7 +138,13 @@ public class Main {
                 BitArray bitArray = table.get(currentBytes);
                 //maxWordLength = Math.max(wordLength, bitArray.length);
                 String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
-                binary += binaryString  + " "; //TODO remove (only for testing)
+                binary += binaryString; //TODO remove (only for testing)
+                while (binary.length() >= 8) {
+                    String oneByte = binary.substring(0, 8);
+                    System.out.println(oneByte);
+                    binary = binary.substring(8);
+                    byteArrayList.add(new Byte(Byte.parseByte(oneByte, 2)));
+                }
 
                 currentBytes.add(b);
 
@@ -169,7 +176,21 @@ public class Main {
         BitArray bitArray = table.get(currentBytes);
         //maxWordLength = Math.max(maxWordLength, bitArray.length);
         String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
-        binary += binaryString  + " "; //TODO remove (only for testing)
+        binary += binaryString; //TODO remove (only for testing)
+        while (binary.length() >= 8) {
+            String oneByte = binary.substring(0, 8);
+            System.out.println(oneByte);
+            binary = binary.substring(8);
+            byteArrayList.add(new Byte(Byte.parseByte(oneByte, 2)));
+        }
+        if (binary.length() != 0) {
+            while (binary.length() != 8)
+                binary += "0";
+            String oneByte = binary.substring(0, 8);
+            System.out.println(oneByte);
+            binary = binary.substring(8);
+            byteArrayList.add(new Byte(Byte.parseByte(oneByte, 2)));
+        }
     }
 
     public static void decode() {
@@ -272,7 +293,7 @@ public class Main {
         System.out.println("Decoded in bytes: ");
         encode(input);
         System.out.println("Decoded in binary: ");
-        System.out.println(binary);
+        System.out.println(byteArrayList.toString());
         System.out.println("Encoded in bytes: ");
         decode();
     }
