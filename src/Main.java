@@ -54,6 +54,7 @@ public class Main {
         return value;
     }
 
+
     /**
      * Return Integer from binary string
      * @param s - binary string
@@ -82,16 +83,17 @@ public class Main {
         byte value = 0;
         byte pw = 1;
 
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length() - 1; i++) {
             if (s.charAt(s.length() - i - 1) == '1') {
-                if (i != 0)
                     value += pw;
-                else
-                    value *= -1;
+
             }
 
             pw *= 2;
         }
+
+        if (s.charAt(0) == '1')
+            value *= -1;
 
         return value;
     }
@@ -327,10 +329,38 @@ public class Main {
         return outputStream;
     }
 
+    public static String getBinaryFromByte(byte b) {
+        String value = "";
+        int pw = 1;
+        for (int i = 0; i < 6; i++) {
+            pw *= 2;
+        }
+
+        if (b < 0) {
+            value += "1";
+            b *= -1;
+        } else
+            value += "0";
+
+        for (int i = 0; i < 7; i++) {
+            if (b >= pw) {
+                value += "1";
+                b -= pw;
+            } else {
+                value += "0";
+            }
+            pw /= 2;
+        }
+
+        return value;
+    }
 
     public static void main(String[] args) throws IOException {
 
         System.out.println(getBinaryWithGivenWordLength(8, 10));
+        Byte bbb = 3;
+        System.out.println(getBinaryFromByte(bbb));
+        System.out.println(getByteFromBinary("00000011"));
 
         String filename = "./src/input.txt";
 
@@ -344,10 +374,9 @@ public class Main {
         System.out.println();
 
 
-        System.out.println("Decoded in bytes: ");
         encode(input);
+        System.out.println("Binary after encoding: ");
         System.out.println(binary);
-        System.out.println("Decoded in binary: ");
 
         OutputStream outputLZWStream = new BufferedOutputStream(new FileOutputStream("./src/archive.lzw"));
         ArrayList<Byte> encoding = new ArrayList<>();
@@ -355,7 +384,10 @@ public class Main {
             binary += "0";
         for (int i = 0; i < binary.length(); i += 8) {
             String currentByte = binary.substring(i, i + 8);
-            encoding.add(getByteFromBinary(currentByte));
+            //System.out.println(currentByte);
+            Byte bb = getByteFromBinary(currentByte);
+            //System.out.println(bb);
+            encoding.add(bb);
         }
         for (Byte b : encoding) {
             outputLZWStream.write(b);
@@ -366,9 +398,12 @@ public class Main {
 
         byte[] inputArchive =  Files.readAllBytes(Paths.get("./src/archive.lzw"));
         for (byte b : inputArchive) {
-            binary += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+            //System.out.println(b + " " + getBinaryFromByte(b));
+            binary += getBinaryFromByte(b);
+            //System.out.println(getBinaryFromByte(b) + " " + b);
         }
 
+        System.out.println("Binary after reading: ");
         System.out.println(binary);
 
         System.out.println("Encoded in bytes: ");
