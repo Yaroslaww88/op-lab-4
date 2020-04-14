@@ -362,7 +362,7 @@ public class Main {
         System.out.println(getBinaryFromByte(bbb));
         System.out.println(getByteFromBinary("00000011"));
 
-        String filename = "./src/input.txt";
+        String filename = "src/input.txt";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
@@ -418,7 +418,7 @@ public class Main {
 
         System.out.println("Encoded in bytes: ");
         ArrayList<Byte> output = decode();
-
+        coddingClass.makeDict("abacabadabacabae");
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream("./src/output.txt"));
         for (Byte b : output) {
             outputStream.write(b);
