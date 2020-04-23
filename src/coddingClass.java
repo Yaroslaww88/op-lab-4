@@ -24,6 +24,7 @@ public class coddingClass {
         currentCode.add(inp.get(0));
         addArray(dictionary,currentCode);
         inp.remove(0);
+        currentCode.clear();
         do {
             // System.out.println(inp);
             Boolean isAdd = false;
@@ -36,7 +37,7 @@ public class coddingClass {
                 }
                 //System.out.println(isAdd);
             }
-            if (!isAdd) {
+            if (!isAdd&&!currentCode.isEmpty()) {
                 addArray(dictionary,currentCode);
                 currentCode.clear();
                 currentCode.add(inp.get(0));
