@@ -19,12 +19,23 @@ public class coddingClass {
                 doubleNumOfBit();
                 moreLength();
             }
+        ArrayList<Byte> startArray = new ArrayList<>();
+            for(Byte q: inp){
+                boolean shouldAdd = true;
+                for(int i=0;i<startArray.size();i++){
+                    if(q==startArray.get(i)){
+                        shouldAdd=false;
+                    }
+                }
+                if (shouldAdd){
+                    startArray.add(q);
+                    shouldAdd = true;
+                }
+            }
+            addByEllements(dictionary,startArray);
         ArrayList<Byte> currentCode = new ArrayList<>();
-        ArrayList<String> byteValueDictionary = new ArrayList<>();
-        currentCode.add(inp.get(0));
-        addArray(dictionary,currentCode);
-        inp.remove(0);
-        currentCode.clear();
+            // ArrayList<String> byteValueDictionary = new ArrayList<>();
+        //not yusing now
         do {
             // System.out.println(inp);
             Boolean isAdd = false;
@@ -39,7 +50,7 @@ public class coddingClass {
             }
             if (!isAdd&&!currentCode.isEmpty()) {
                 addArray(dictionary,currentCode);
-                currentCode.clear();
+                currentCode.remove(0);
                 currentCode.add(inp.get(0));
                 inp.remove(0);
                // System.out.println("wrrgwrg");
@@ -91,5 +102,18 @@ public class coddingClass {
         }
         first.add(buff);
     }
-    
+
+    public static String makeCodedMessage(ArrayList<ArrayList<Byte>> dictionary){
+        String ans = "";
+
+
+        return ans;
+    }
+    public static void addByEllements(ArrayList<ArrayList<Byte>> dictionary,ArrayList<Byte> start){
+        for(Byte q:start){
+            ArrayList<Byte> buff = new ArrayList<>();
+            buff.add(q);
+            dictionary.add(buff);
+        }
+    }
 }
