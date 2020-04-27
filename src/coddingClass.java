@@ -49,8 +49,9 @@ public class coddingClass {
                 //System.out.println(isAdd);
             }
             if (!isAdd&&!currentCode.isEmpty()) {
+                //System.out.println(currentCode);
                 addArray(dictionary,currentCode);
-                currentCode.remove(0);
+                currentCode= removeWithoutLast(currentCode);
                 currentCode.add(inp.get(0));
                 inp.remove(0);
                // System.out.println("wrrgwrg");
@@ -62,8 +63,14 @@ public class coddingClass {
         } while (inp.size() != 0);
 
         System.out.println(dictionary);
-
         return ans;
+    }
+
+    public static  ArrayList<Byte> removeWithoutLast(ArrayList<Byte>input){
+        do{
+            input.remove(0);
+        }while (input.size()!=1);
+        return input;
     }
 
     public static Integer getNumOfBit() {
@@ -116,4 +123,5 @@ public class coddingClass {
             dictionary.add(buff);
         }
     }
+
 }
