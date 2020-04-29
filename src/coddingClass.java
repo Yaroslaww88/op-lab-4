@@ -1,3 +1,4 @@
+import java.awt.geom.Area;
 import java.util.ArrayList;
 
 import static java.lang.Math.pow;
@@ -61,10 +62,45 @@ public class coddingClass {
                // System.out.println("121212");
             }
         } while (inp.size() != 0);
-
         System.out.println(dictionary);
+        ArrayList<ArrayList<String>> binaryDictionary = new ArrayList<>();
+        binaryDictionary= byteToBinary(dictionary);
+        System.out.println(binaryDictionary);
+        //MakeBinary(dictionary);
         return ans;
     }
+    public static String MakeBinary(ArrayList<ArrayList<Byte>> dictionary){
+        String ans="";
+        String currentCode="#000";
+        Integer currentSize = dictionary.get(0).size();
+        do{
+            /* System.out.println(dictionary); */
+            if(dictionary.get(1).size()>currentSize) {
+                ans+=currentCode;
+                currentCode += "1";
+                currentSize=dictionary.get(1).size();
+            }
+            else
+            ans+=currentCode;
+            dictionary.remove(0);
+        }while(dictionary.size()!=1);
+        ans+=currentCode;
+        System.out.println(ans);
+        return ans;
+    }
+    public static ArrayList<ArrayList<String>> byteToBinary(ArrayList<ArrayList<Byte>> in){
+        ArrayList<ArrayList<String>> out=new ArrayList<>();
+        do{
+            ArrayList<String>buuf=new ArrayList<>();
+            ArrayList<Byte> buff = in.get(0);
+            for(int i=0;i<buff.size();i++)
+            buuf.add( Main.getBinaryFromByte(buff.get(i)));
+            in.remove(0);
+            out.add(buuf);
+        }while (!in.isEmpty());
+        return out;
+    }
+
 
     public static  ArrayList<Byte> removeWithoutLast(ArrayList<Byte>input){
         do{

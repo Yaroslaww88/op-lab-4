@@ -424,5 +424,6 @@ public class Main {
             outputStream.write(b);
         }
         outputStream.close();
+        LZVarhiver.MakeDictionaryBigger("abacabadabacabae");
     }
 }
