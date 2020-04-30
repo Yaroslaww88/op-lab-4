@@ -316,7 +316,7 @@ public class Main {
         String nextString = binaryBuffer.substring(0, wordLength);
         binaryBuffer = binaryBuffer.substring(wordLength);
 
-        System.out.println("next token: " + nextString + " " + Integer.parseInt(nextString, 2) + " length: " + wordLength);
+        //System.out.println("next token: " + nextString + " " + Integer.parseInt(nextString, 2) + " length: " + wordLength);
         return Integer.parseInt(nextString, 2);
     }
 
@@ -433,7 +433,7 @@ public class Main {
         //System.out.println((byte)(int)Integer.valueOf("01111111", 2));
         //System.out.println(getByteFromBinary("10000000"));
 
-        String filename = "src/264539.jpg";
+        String filename = "src/input.pdf";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
