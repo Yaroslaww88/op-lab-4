@@ -1,5 +1,8 @@
 *.txt
 *.lzw
 *.rar
-**/.idea/
-**/out/
+*.pdf
+*.png
+.idea/
+out/
+files/

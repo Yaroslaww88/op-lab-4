@@ -94,7 +94,7 @@ public class coddingClass {
             ArrayList<String>buuf=new ArrayList<>();
             ArrayList<Byte> buff = in.get(0);
             for(int i=0;i<buff.size();i++)
-            buuf.add( Main.getBinaryFromByte(buff.get(i)));
+            //buuf.add( Main.getBinaryFromByte(buff.get(i)));
             in.remove(0);
             out.add(buuf);
         }while (!in.isEmpty());
