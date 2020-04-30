@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 
@@ -8,11 +9,11 @@ public class LZVarhiver {
 
 
     }
-    public static ArrayList<Pair<Character,Integer>> MakeDictionaryBigger(String input){
-        ArrayList<Pair<String,Integer>> start= Dictionary.makeBaseDictionary();
+    public static ArrayList<Pair<Character,Byte>> MakeDictionaryBigger(String input){
+        ArrayList<Pair<String,Byte>> start= Dictionary.makeBaseDictionary();
         String inputForCodedByte = input;
-        ArrayList<Pair<Character,Integer>> adding = new ArrayList<>();
-        ArrayList<Integer> codedByte = new ArrayList<>();
+        ArrayList<Pair<Character,Byte>> adding = new ArrayList<>();
+        ArrayList<Byte> codedByte = new ArrayList<>();
         ArrayList<Character> in = new ArrayList<>();    //+
         coddingClass.makeDict(input);                   //+
         for(int i=0;i<input.length();i++)
@@ -48,7 +49,8 @@ public class LZVarhiver {
             if(isInDict==false&& currentAdding!="") {
                 if(start.size()>=Dictionary.getCurrentSize())
                     Dictionary.doubleCurrentSize();
-                start.add(new Pair<>(currentAdding, start.size()));
+
+                start.add(new Pair<>(currentAdding,(byte) (start.size()+256 & 0xFF)));
                 currentAdding="";
             }
             if(currentAdding == ""||isInDict==true) {
