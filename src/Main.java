@@ -174,26 +174,29 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String filename = "./files/input.exe";
-        MyReader reader = new MyReader(filename);
-        MyToken token = new MyToken(reader);
+        String action = args[0];
 
-        MyWriter writer = new MyWriter("./files/archive.lzw");
+        switch (action) {
+            case "compress":
+                String filename = args[1];
+                MyReader reader = new MyReader(filename);
+                MyToken token = new MyToken(reader);
 
-        try {
-            encode(token, writer);
-        } catch (Exception ex) {
-            throw ex;
+                MyWriter writer = new MyWriter("./archive.lzw");
+                encode(token, writer);
+                System.out.println("Compression done... Archive can be found at ./archive.lzw");
+                break;
+            case "decompress":
+                filename = args[1];
+                reader = new MyReader(filename);
+                token = new MyToken(reader);
+
+                filename = args[2];
+                writer = new MyWriter(filename);
+
+                decode(token, writer);
+                System.out.println("Decompression done... Output file can be found at " + filename);
+                break;
         }
-
-
-        System.out.println("Encoded successfully");
-        writer = new MyWriter("./files/output.txt");
-
-        System.out.println("Read successfully");
-        reader = new MyReader("./files/archive.lzw");
-        token = new MyToken(reader);
-
-        decode(token, writer);
     }
 }
