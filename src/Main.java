@@ -149,6 +149,16 @@ public class Main {
     static private Integer inputArchiveIndex = 0;
     static private String binaryBuffer = "";
 
+    //KEKW
+    public static void outputToOutput(ArrayList<Byte> bytes) {
+        try {
+            for (Byte b : bytes) {
+                outputStream.write(b);
+            }
+        } catch (IOException ex) {
+        }
+    }
+
     public static void encode(ArrayList<Byte> inputBytes) {
         int tableSize =  257;
         int wordLength = 9; //Word length in bits (9 because we have 8bit alphabet)
@@ -239,12 +249,12 @@ public class Main {
                 ArrayList<Byte> arrayToPut = new ArrayList<>(currentBytes);
                 arrayToPut.add(b);
 
-                if (tableSize < 100000) {
+                //if (tableSize < 100000) {
                     table.put(arrayToPut, new BitArray(wordLength, tableSize));
                     tableSize++;
                     wordLength = calcWordLength(tableSize);
-                }
-                System.out.println(tableSize);
+                //}
+                //System.out.println(tableSize);
                 /**
                  * recalculate word length 8 => 9 => 10 => ... bits
                  */
@@ -310,10 +320,9 @@ public class Main {
         return Integer.parseInt(nextString, 2);
     }
 
-    public static ArrayList<Byte> decode() {
+    public static void decode() {
         int tableSize =  257;
         int wordLength = 9; //Word length in bits
-        ArrayList<Byte> outputStream = new ArrayList<>();
 
         TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
 
@@ -356,7 +365,7 @@ public class Main {
         ArrayList<Byte> currentBytes = new ArrayList<>();
         //Integer oldToken = bytes.get(0);
         Integer oldToken = getNextToken(wordLength);
-        outputStream.addAll(table.get(oldToken));
+        outputToOutput(table.get(oldToken));
         for (Byte b : table.get(oldToken))
             currentBytes.add(b);
         Byte C = table.get(oldToken).get(0); //TODO rename
@@ -384,9 +393,10 @@ public class Main {
                     currentBytes.add(b);
             }
 
-            for (Byte b : currentBytes) {
-                outputStream.add(b);
-            }
+            outputToOutput(currentBytes);
+//            for (Byte b : currentBytes) {
+//                outputStream.add(b);
+//            }
             //System.out.print(currentBytes.toString() + " ");
             C = currentBytes.get(0);
             ArrayList<Byte> arrayToPut = new ArrayList<>();
@@ -394,7 +404,7 @@ public class Main {
                 arrayToPut.add(b);
             arrayToPut.add(C);
 
-            System.out.println(oldToken + " " + currentToken + " " + tableSize);
+            //System.out.println(oldToken + " " + currentToken + " " + tableSize);
             table.put(tableSize, arrayToPut);
             tableSize++;
 //            if (tableSize == 514) {
@@ -409,12 +419,10 @@ public class Main {
              * recalculate word length 8 => 9 => 10 => ... bits
              */
 
-            System.out.println(tableSize + " " + wordLength);
+            //System.out.println(tableSize + " " + wordLength);
 
             oldToken = currentToken;
         }
-
-        return outputStream;
     }
 
     public static void main(String[] args) throws IOException {
@@ -425,7 +433,7 @@ public class Main {
         //System.out.println((byte)(int)Integer.valueOf("01111111", 2));
         //System.out.println(getByteFromBinary("10000000"));
 
-        String filename = "src/input.png";
+        String filename = "src/264539.jpg";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
