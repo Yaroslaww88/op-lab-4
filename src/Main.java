@@ -44,6 +44,7 @@ public class Main {
         ArrayList<Byte> currentBytes = new ArrayList<>();
         try {
             currentBytes.add(token.getNextByte());
+            //System.out.println(currentBytes);
         } catch (Exception ex) {
             throw new Exception("Empty file!");
         }
@@ -64,6 +65,7 @@ public class Main {
             ArrayList<Byte> tempCurrentBytes = new ArrayList<>(currentBytes);
             tempCurrentBytes.add(b);
 
+            //System.out.println(currentBytes);
             if (table.containsKey(tempCurrentBytes)) {
                 currentBytes.add(b);
             } else {
@@ -96,8 +98,6 @@ public class Main {
         writer.write(binaryString);
         writer.endWriteStream();
     }
-
-
 
     public static void decode(MyToken token, MyWriter writer) {
         int tableSize =  257;
@@ -140,12 +140,14 @@ public class Main {
                 break;
 
             if (!table.containsKey(currentToken)) {
-                currentBytes = new ArrayList<>(table.get(oldToken));
+                currentBytes = new ArrayList<>();
+                currentBytes.addAll(table.get(oldToken));
 //                for (Byte b : table.get(oldToken))
 //                    currentBytes.add(b);
                 currentBytes.add(C);
             } else {
-                currentBytes = new ArrayList<>(table.get(currentToken));
+                currentBytes = new ArrayList<>();
+                currentBytes.addAll(table.get(currentToken));
 //                for (Byte b : table.get(currentToken))
 //                    currentBytes.add(b);
             }
@@ -173,6 +175,24 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
+
+//        String filename = "./files/input.exe";
+//        MyReader reader = new MyReader(filename);
+//        MyToken token = new MyToken(reader);
+//
+//        MyWriter writer = new MyWriter("./archive.lzw");
+//        encode(token, writer);
+//        System.out.println("Compression done... Archive can be found at ./archive.lzw");
+//
+//        filename = "./archive.lzw";
+//        reader = new MyReader(filename);
+//        token = new MyToken(reader);
+//
+//        filename = "./files/output.txt";
+//        writer = new MyWriter(filename);
+//
+//        decode(token, writer);
+//        System.out.println("Decompression done... Output file can be found at " + filename);
 
         String action = args[0];
 

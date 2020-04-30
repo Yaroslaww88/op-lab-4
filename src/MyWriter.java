@@ -21,6 +21,7 @@ public class MyWriter {
     public void write(String _binary) {
         try {
             String binary = __binary + _binary;
+            //System.out.println(_binary);
             while (binary.length() >= 8) {
                 stream.write(Utils.getByteFromBinary(binary.substring(0, 8)));
                 binary = binary.substring(8);
