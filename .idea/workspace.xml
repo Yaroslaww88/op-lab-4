@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="3110179a-59fe-4eab-be4b-f0bda0fd78aa" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LZVarhiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LZVarhiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OP_Lab4/META-INF/OP_Lab4.kotlin_module" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OP_Lab4/META-INF/OP_Lab4.kotlin_module" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OP_Lab4/Main$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OP_Lab4/Main$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OP_Lab4/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OP_Lab4/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +39,18 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
@@ -83,12 +98,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="223" y="70" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586608585968">

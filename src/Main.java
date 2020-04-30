@@ -3,11 +3,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.lang.Byte.parseByte;
+
 public class Main {
-
-    static String binary = "";
-    static ArrayList<Byte> byteArrayList = new ArrayList<>();
-
     /**
      * Calculate word length for given integer (used to expand table)
      * Ex: 1025 - 10
@@ -19,8 +17,10 @@ public class Main {
         int pw = 1;
         // 32 - max word length
         for (int i = 0; i < 32; i++) {
-            if (pw >= integer)
+            if (pw >= integer) {
+                //System.out.println("calcWordLength: " + integer + " i: " + i);
                 return i;
+            }
             pw *= 2;
         }
         return 0;
@@ -55,24 +55,24 @@ public class Main {
     }
 
 
-    /**
-     * Return Integer from binary string
-     * @param s - binary string
-     * @return parsed Integer
-     */
-    public static Integer getIntegerFromBinary(String s) {
-        Integer value = 0;
-        int pw = 1;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(s.length() - i - 1) == '1')
-                value += pw;
-
-            pw *= 2;
-        }
-
-        return value;
-    }
+//    /**
+//     * Return Integer from binary string
+//     * @param s - binary string
+//     * @return parsed Integer
+//     */
+//    public static Integer getIntegerFromBinary(String s) {
+//        Integer value = 0;
+//        int pw = 1;
+//
+//        for (int i = 0; i < s.length(); i++) {
+//            if (s.charAt(s.length() - i - 1) == '1')
+//                value += pw;
+//
+//            pw *= 2;
+//        }
+//
+//        return value;
+//    }
 
     /**
      * Return SIGNED Byte from binary string
@@ -95,12 +95,43 @@ public class Main {
         if (s.charAt(0) == '1')
             value *= -1;
 
+        if (s.charAt(0) == '1' && value == 0)
+            value = -128;
+
         return value;
     }
 
+    public static String getBinaryFromByte(byte b) {
+        String value = "";
+        int pw = 1;
+        for (int i = 0; i < 6; i++) {
+            pw *= 2;
+        }
+
+        if (b < 0) {
+            value += "1";
+            b *= -1;
+        } else
+            value += "0";
+
+        for (int i = 0; i < 7; i++) {
+            if (b >= pw) {
+                value += "1";
+                b -= pw;
+            } else {
+                value += "0";
+            }
+            pw /= 2;
+        }
+
+        return value;
+    }
+
+    static String binary = "";
+    static ArrayList<Byte> byteArrayList = new ArrayList<>();
 
     public static void encode(ArrayList<Byte> inputBytes) {
-        int tableSize =  256;
+        int tableSize =  257;
         int wordLength = 9; //Word length in bits (9 because we have 8bit alphabet)
         ArrayList<Byte> outputStream = new ArrayList<>();
 
@@ -122,12 +153,32 @@ public class Main {
         });
 
         Integer k = 0;
-        for (Byte i = -127; i < 127 ; i++) {
+        Byte _b = -128;
+        while (true) {
             ArrayList<Byte> arr = new ArrayList<>();
-            arr.add(i);
-            //Add alphabet (of bytes) in table
+            arr.add(_b);
             table.put(arr, new BitArray(8, k++));
+            _b++;
+            if (_b == 127) {
+                arr = new ArrayList<>();
+                arr.add(_b);
+                table.put(arr, new BitArray(8, k++));
+                break;
+            }
         }
+//        for (Byte i = -128; i <= 127 ; i++) {
+//
+//            arr.add(i);
+//            //Add alphabet (of bytes) in table
+//            //System.out.println(i);
+//            table.put(arr, new BitArray(8, k++));
+//        }
+//        ArrayList<Byte> arr = new ArrayList<>();
+//        Byte bbbb = 127;
+//        arr.add(bbbb);
+//        //Add alphabet (of bytes) in table
+//        System.out.println("bbbb: " + bbbb);
+//        table.put(arr, new BitArray(8, k++));
 
         /**
          * max word length of outputted token (only increase)
@@ -137,17 +188,11 @@ public class Main {
 
         ArrayList<Byte> currentBytes = new ArrayList<>();
         currentBytes.add(inputBytes.get(0));
-        boolean isZeroIndex = true;
-        for (Byte b : inputBytes) {
-            //Skip first symbol
-            if (isZeroIndex) {
-                isZeroIndex = false;
-                continue;
-            }
+        for (int i = 1; i < inputBytes.size(); i++) {
+            Byte b = inputBytes.get(i);
 
             //TODO: fix (do not create copy of array each time)
-            ArrayList<Byte> tempCurrentBytes = new ArrayList<>();
-            tempCurrentBytes.addAll(currentBytes);
+            ArrayList<Byte> tempCurrentBytes = new ArrayList<>(currentBytes);
             tempCurrentBytes.add(b);
             //TODO ended
 
@@ -160,7 +205,10 @@ public class Main {
                  */
                 BitArray bitArray = table.get(currentBytes);
                 //maxWordLength = Math.max(wordLength, bitArray.length);
+
+                    //System.out.println("Kappa" + table.get(currentBytes) + " curBytes: " + currentBytes + " size: " + tableSize + " " + b);
                 String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
+                System.out.println(binaryString + " " + tableSize);
                 binary += binaryString; //TODO remove (only for testing)
 
                 /*while (binary.length() >= 8) {
@@ -172,11 +220,7 @@ public class Main {
 
                 currentBytes.add(b);
 
-                //TODO: fix (do not create copy of array each time)
-                ArrayList<Byte> arrayToPut = new ArrayList<>();
-                for (Byte b1 : currentBytes)
-                    arrayToPut.add(b1);
-                //TODO ended
+                ArrayList<Byte> arrayToPut = new ArrayList<>(currentBytes);
 
                 table.put(arrayToPut, new BitArray(wordLength, tableSize));
                 tableSize++;
@@ -229,27 +273,36 @@ public class Main {
         if (binary.length() == 0 || binary.length() < wordLength)
             return -1;
 
-        while (binary.length() < wordLength)
-            binary = "0" + binary;
+//        while (binary.length() < wordLength)
+//            binary = "0" + binary;
 
         String nextString = binary.substring(0, wordLength);
         binary = binary.substring(wordLength);
 
+        System.out.println("next token: " + nextString + " " + Integer.parseInt(nextString, 2) + " length: " + wordLength);
         return Integer.parseInt(nextString, 2);
     }
 
     public static ArrayList<Byte> decode() {
-        int tableSize =  256;
+        int tableSize =  257;
         int wordLength = 9; //Word length in bits
         ArrayList<Byte> outputStream = new ArrayList<>();
 
         TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
 
         Integer k = 0;
-        for (Byte i = -127; i < 127; i++) {
+        Byte _b = -128;
+        while (true) {
             ArrayList<Byte> arr = new ArrayList<>();
-            arr.add(i);
+            arr.add(_b);
             table.put(k++, arr);
+            _b++;
+            if (_b == 127) {
+                arr = new ArrayList<>();
+                arr.add(_b);
+                table.put(k++, arr);
+                break;
+            }
         }
 
         /**
@@ -271,18 +324,13 @@ public class Main {
             }
         }*/
 
-        /**
-         * init word length and table size
-         */
-        wordLength = 9;
-
         boolean isZeroIndex = true;
         //System.out.print(table.get(bytes.get(0)).get(0) + " ");
         ArrayList<Byte> currentBytes = new ArrayList<>();
         //Integer oldToken = bytes.get(0);
         Integer oldToken = getNextToken(wordLength);
         outputStream.addAll(table.get(oldToken));
-        Byte C = 0; //TODO rename
+        Byte C = table.get(oldToken).get(0); //TODO rename
         while (true) {
             //Skip first symbol
             if (isZeroIndex) {
@@ -298,6 +346,7 @@ public class Main {
 
             if (!table.containsKey(currentToken)) {
                 currentBytes = new ArrayList<>();
+                System.out.println(oldToken + " " + currentToken + " " + tableSize);
                 for (Byte b : table.get(oldToken))
                     currentBytes.add(b);
                 currentBytes.add(C);
@@ -329,40 +378,15 @@ public class Main {
         return outputStream;
     }
 
-    public static String getBinaryFromByte(byte b) {
-        String value = "";
-        int pw = 1;
-        for (int i = 0; i < 6; i++) {
-            pw *= 2;
-        }
-
-        if (b < 0) {
-            value += "1";
-            b *= -1;
-        } else
-            value += "0";
-
-        for (int i = 0; i < 7; i++) {
-            if (b >= pw) {
-                value += "1";
-                b -= pw;
-            } else {
-                value += "0";
-            }
-            pw /= 2;
-        }
-
-        return value;
-    }
-
     public static void main(String[] args) throws IOException {
 
-        System.out.println(getBinaryWithGivenWordLength(8, 10));
-        Byte bbb = 3;
-        System.out.println(getBinaryFromByte(bbb));
-        System.out.println(getByteFromBinary("00000011"));
+//        System.out.println(getBinaryWithGivenWordLength(8, 10));
+//        Byte bbb = 3;
+//        System.out.println(getBinaryFromByte(bbb));
+        //System.out.println((byte)(int)Integer.valueOf("01111111", 2));
+        //System.out.println(getByteFromBinary("10000000"));
 
-        String filename = "src/input.txt";
+        String filename = "src/input.png";
 
         byte[] fileContents =  Files.readAllBytes(Paths.get(filename));
         ArrayList<Byte> input = new ArrayList<Byte>();
@@ -385,16 +409,16 @@ public class Main {
         for (int i = 0; i < binary.length(); i += 8) {
             if (i + 8 >= binary.length()) {
                 String currentByte = binary.substring(i);
-                System.out.println("dsadas  " + currentByte);
                 while (currentByte.length() < 8)
                     currentByte = currentByte + "0";
+                System.out.println("currentByte  " + currentByte);
                 Byte bb = getByteFromBinary(currentByte);
-                //System.out.println(bb);
+                System.out.println(bb);
                 encoding.add(bb);
                 break;
             }
             String currentByte = binary.substring(i, i + 8);
-            //System.out.println(currentByte);
+            System.out.print(currentByte + " ");
             Byte bb = getByteFromBinary(currentByte);
             //System.out.println(bb);
             encoding.add(bb);
@@ -418,12 +442,12 @@ public class Main {
 
         System.out.println("Encoded in bytes: ");
         ArrayList<Byte> output = decode();
-        coddingClass.makeDict("abacabadabacabae");
+        //coddingClass.makeDict("abacabadabacabae");
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream("./src/output.txt"));
         for (Byte b : output) {
             outputStream.write(b);
         }
         outputStream.close();
-        LZVarhiver.MakeDictionaryBigger("abacabadabacabae");
+        //LZVarhiver.MakeDictionaryBigger("abacabadabacabae");
     }
 }
