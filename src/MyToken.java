@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class MyToken {
 
-    ArrayList<Byte> bytes;
-
-    MyToken(ArrayList<Byte> bytes) {
-        this.bytes = bytes;
-    }
-
+    MyReader reader;
+    ArrayList<Byte> buffer = new ArrayList<Byte>();
     private Integer inputArchiveIndex = 0;
     private String binaryBuffer = "";
+
+    MyToken(MyReader reader) {
+        this.reader = reader;
+    }
 
     /**
      * Returns next token from bytes stream
@@ -22,11 +22,17 @@ public class MyToken {
         /**
          * get next wordLength chars and delete them from the beginning
          */
-        while (binaryBuffer.length() < wordLength * 10) {
-            if (inputArchiveIndex >= bytes.size())
-                break;
-            binaryBuffer += Utils.getBinaryFromByte(bytes.get(inputArchiveIndex));
-            inputArchiveIndex++;
+        if (binaryBuffer.length() < 10000) {
+            try {
+                //System.out.println("GET HERE");
+                buffer = reader.readBytes(10000);
+            } catch (Exception ex) {
+                //System.out.println("GET HERE");
+            }
+        }
+        while (buffer.size() > 0) {
+            binaryBuffer += Utils.getBinaryFromByte(buffer.get(0));
+            buffer.remove(0);
         }
 
         if (binaryBuffer.length() == 0 || binaryBuffer.length() < wordLength)
@@ -34,12 +40,38 @@ public class MyToken {
 
 //        while (binary.length() < wordLength)
 //            binary = "0" + binary;
+        //System.out.println("GET HERE");
 
         String nextString = binaryBuffer.substring(0, wordLength);
         binaryBuffer = binaryBuffer.substring(wordLength);
 
         //System.out.println("next token: " + nextString + " " + Integer.parseInt(nextString, 2) + " length: " + wordLength);
+
         return Integer.parseInt(nextString, 2);
+    }
+
+    public boolean hasNextByte() {
+        if (buffer.size() == 0) {
+            try {
+                buffer = reader.readBytes(10000);
+            } catch (IOException ex) {
+
+            }
+        }
+        if (buffer.size() > 0)
+            return true;
+        else
+            return false;
+    }
+
+    public Byte getNextByte() throws Exception {
+        if (hasNextByte()) {
+            Byte first = buffer.get(0);
+            buffer.remove(0);
+            return first;
+        } else {
+            throw new Exception("Doesnt have next byte");
+        }
     }
 
 }

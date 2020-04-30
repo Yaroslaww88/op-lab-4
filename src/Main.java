@@ -1,9 +1,11 @@
 import java.io.*;
 import java.util.*;
 
+import static java.lang.System.exit;
+
 public class Main {
 
-    public static void encode(ArrayList<Byte> inputBytes, MyWriter writer) {
+    public static void encode(MyToken token, MyWriter writer) throws Exception {
         int tableSize =  257;
         int wordLength = 9; //Word length in bits (9 because we have 8bit alphabet)
 
@@ -40,9 +42,24 @@ public class Main {
         }
 
         ArrayList<Byte> currentBytes = new ArrayList<>();
-        currentBytes.add(inputBytes.get(0));
-        for (int i = 1; i < inputBytes.size(); i++) {
-            Byte b = inputBytes.get(i);
+        try {
+            currentBytes.add(token.getNextByte());
+        } catch (Exception ex) {
+            throw new Exception("Empty file!");
+        }
+        boolean isFirst = true;
+        while (true) {
+            if (isFirst) {
+                isFirst = false;
+                continue;
+            }
+
+            if (!token.hasNextByte())
+                break;
+
+            //System.out.println(tableSize);
+
+            Byte b = token.getNextByte();
 
             ArrayList<Byte> tempCurrentBytes = new ArrayList<>(currentBytes);
             tempCurrentBytes.add(b);
@@ -73,6 +90,7 @@ public class Main {
                 currentBytes.add(b);
             }
         }
+
         BitArray bitArray = table.get(currentBytes);
         String binaryString = Utils.getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
         writer.write(binaryString);
@@ -85,7 +103,7 @@ public class Main {
         int tableSize =  257;
         int wordLength = 9; //Word length in bits
 
-        TreeMap<Integer, ArrayList<Byte>> table = new TreeMap<Integer, ArrayList<Byte>>();
+        HashMap<Integer, ArrayList<Byte>> table = new HashMap<Integer, ArrayList<Byte>>();
 
         Integer k = 0;
         Byte _b = -128;
@@ -106,8 +124,9 @@ public class Main {
         ArrayList<Byte> currentBytes = new ArrayList<>();
         Integer oldToken = token.getNextToken(wordLength);
         writer.write(table.get(oldToken));
-        for (Byte b : table.get(oldToken))
-            currentBytes.add(b);
+        currentBytes.addAll(table.get(oldToken));
+//        for (Byte b : table.get(oldToken))
+//            currentBytes.add(b);
         Byte C = table.get(oldToken).get(0); //TODO rename
         while (true) {
             //Skip first symbol
@@ -121,22 +140,23 @@ public class Main {
                 break;
 
             if (!table.containsKey(currentToken)) {
-                currentBytes = new ArrayList<>();
-                for (Byte b : table.get(oldToken))
-                    currentBytes.add(b);
+                currentBytes = new ArrayList<>(table.get(oldToken));
+//                for (Byte b : table.get(oldToken))
+//                    currentBytes.add(b);
                 currentBytes.add(C);
             } else {
-                currentBytes = new ArrayList<>();
-                for (Byte b : table.get(currentToken))
-                    currentBytes.add(b);
+                currentBytes = new ArrayList<>(table.get(currentToken));
+//                for (Byte b : table.get(currentToken))
+//                    currentBytes.add(b);
             }
 
             writer.write(currentBytes);
+            //System.out.println(tableSize);
 
             C = currentBytes.get(0);
-            ArrayList<Byte> arrayToPut = new ArrayList<>();
-            for (Byte b : table.get(oldToken))
-                arrayToPut.add(b);
+            ArrayList<Byte> arrayToPut = new ArrayList<>(table.get(oldToken));
+//            for (Byte b : table.get(oldToken))
+//                arrayToPut.add(b);
             arrayToPut.add(C);
 
             table.put(tableSize, arrayToPut);
@@ -152,21 +172,27 @@ public class Main {
         writer.endWriteStream();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
-        String filename = "./files/input.txt";
-        MyReader reader = new MyReader();
-        ArrayList<Byte> inputBytes = reader.readBytes(filename);
+        String filename = "./files/input.exe";
+        MyReader reader = new MyReader(filename);
+        MyToken token = new MyToken(reader);
 
         MyWriter writer = new MyWriter("./files/archive.lzw");
 
-        encode(inputBytes, writer);
+        try {
+            encode(token, writer);
+        } catch (Exception ex) {
+            throw ex;
+        }
 
-        ArrayList<Byte> archiveBytes = reader.readBytes("./files/archive.lzw");
 
+        System.out.println("Encoded successfully");
         writer = new MyWriter("./files/output.txt");
 
-        MyToken token = new MyToken(archiveBytes);
+        System.out.println("Read successfully");
+        reader = new MyReader("./files/archive.lzw");
+        token = new MyToken(reader);
 
         decode(token, writer);
     }

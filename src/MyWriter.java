@@ -43,7 +43,7 @@ public class MyWriter {
         try {
             if (__binary.length() > 0) {
                 while (__binary.length() != 8) {
-                    __binary = "0" + __binary;
+                    __binary = __binary + "0";
                 }
                 stream.write(Utils.getByteFromBinary(__binary));
                 __binary = "";
