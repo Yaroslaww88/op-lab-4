@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static java.lang.Byte.parseByte;
+import static java.lang.System.exit;
 
 public class Main {
     /**
@@ -129,6 +130,8 @@ public class Main {
 
     static String binary = "";
     static ArrayList<Byte> byteArrayList = new ArrayList<>();
+    static ArrayList<String> encoding = new ArrayList<>();
+    static ArrayList<String> decoding = new ArrayList<>();
 
     public static void encode(ArrayList<Byte> inputBytes) {
         int tableSize =  257;
@@ -208,7 +211,7 @@ public class Main {
 
                     //System.out.println("Kappa" + table.get(currentBytes) + " curBytes: " + currentBytes + " size: " + tableSize + " " + b);
                 String binaryString = getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
-                System.out.println(binaryString + " " + tableSize);
+                encoding.add(binaryString);
                 binary += binaryString; //TODO remove (only for testing)
 
                 /*while (binary.length() >= 8) {
@@ -218,9 +221,8 @@ public class Main {
                     byteArrayList.add(getByteFromBinary(oneByte));
                 }*/
 
-                currentBytes.add(b);
-
                 ArrayList<Byte> arrayToPut = new ArrayList<>(currentBytes);
+                arrayToPut.add(b);
 
                 table.put(arrayToPut, new BitArray(wordLength, tableSize));
                 tableSize++;
@@ -277,6 +279,7 @@ public class Main {
 //            binary = "0" + binary;
 
         String nextString = binary.substring(0, wordLength);
+        decoding.add(nextString);
         binary = binary.substring(wordLength);
 
         System.out.println("next token: " + nextString + " " + Integer.parseInt(nextString, 2) + " length: " + wordLength);
@@ -330,6 +333,8 @@ public class Main {
         //Integer oldToken = bytes.get(0);
         Integer oldToken = getNextToken(wordLength);
         outputStream.addAll(table.get(oldToken));
+        for (Byte b : table.get(oldToken))
+            currentBytes.add(b);
         Byte C = table.get(oldToken).get(0); //TODO rename
         while (true) {
             //Skip first symbol
@@ -346,7 +351,6 @@ public class Main {
 
             if (!table.containsKey(currentToken)) {
                 currentBytes = new ArrayList<>();
-                System.out.println(oldToken + " " + currentToken + " " + tableSize);
                 for (Byte b : table.get(oldToken))
                     currentBytes.add(b);
                 currentBytes.add(C);
@@ -365,12 +369,23 @@ public class Main {
             for (Byte b : table.get(oldToken))
                 arrayToPut.add(b);
             arrayToPut.add(C);
+
+            System.out.println(oldToken + " " + currentToken + " " + tableSize);
             table.put(tableSize, arrayToPut);
             tableSize++;
+//            if (tableSize == 514) {
+//                for (int j = 0; j < decoding.size(); j++) {
+//                    System.out.println(encoding.get(j) + " " + decoding.get(j));
+//                }
+//                exit(0);
+//            }
+            wordLength = calcWordLength(tableSize + 1);
+
             /**
              * recalculate word length 8 => 9 => 10 => ... bits
              */
-            wordLength = calcWordLength(tableSize);
+
+            System.out.println(tableSize + " " + wordLength);
 
             oldToken = currentToken;
         }
