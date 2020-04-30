@@ -9,11 +9,11 @@ public class LZVarhiver {
 
 
     }
-    public static ArrayList<Pair<Character,Byte>> MakeDictionaryBigger(String input){
-        ArrayList<Pair<String,Byte>> start= Dictionary.makeBaseDictionary();
+    public static byte[] MakeDictionaryBigger(String input){
+        ArrayList<Pair<String,Integer>> start= Dictionary.makeBaseDictionary();
         String inputForCodedByte = input;
-        ArrayList<Pair<Character,Byte>> adding = new ArrayList<>();
-        ArrayList<Byte> codedByte = new ArrayList<>();
+        ArrayList<Pair<Character,Integer>> adding = new ArrayList<>();
+        ArrayList<Integer> codedByte = new ArrayList<>();
         ArrayList<Character> in = new ArrayList<>();    //+
         coddingClass.makeDict(input);                   //+
         for(int i=0;i<input.length();i++)
@@ -50,7 +50,7 @@ public class LZVarhiver {
                 if(start.size()>=Dictionary.getCurrentSize())
                     Dictionary.doubleCurrentSize();
 
-                start.add(new Pair<>(currentAdding,(byte) (start.size()+256 & 0xFF)));
+                start.add(new Pair<>(currentAdding,start.size()));
                 currentAdding="";
             }
             if(currentAdding == ""||isInDict==true) {
@@ -67,8 +67,13 @@ public class LZVarhiver {
         }while (!in.isEmpty());
         System.out.println(start);
         System.out.println(codedByte);
-       // System.out.println(Dictionary.getCurrentSize());
-        return adding;
+       //System.out.println(Dictionary.getCurrentSize());
+        byte[] out = new byte[codedByte.size()];
+        for(int i=0;i<codedByte.size();i++)
+            out[i]= codedByte.get(i).byteValue();
+        System.out.println(codedByte);
+
+        return out;
     }
     public static String removefirst (String in){
         String buf = new String();
