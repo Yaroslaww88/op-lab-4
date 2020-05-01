@@ -95,6 +95,7 @@ public class Utils {
     }
 
     public static String getBinaryFromByte(byte b) {
+        //return Integer.toBinaryString((b & 0xFF) + 0x100).substring(1);
         String value = "";
         int pw = 1;
         for (int i = 0; i < 6; i++) {

@@ -8,6 +8,7 @@ public class MyReader {
 
     private String filename;
     private Long start = 0L;
+    public Long len = 0L;
 
     MyReader(String filename) {
         this.filename = filename;
@@ -16,10 +17,12 @@ public class MyReader {
     public ArrayList<Byte> readBytes() throws IOException {
         try {
             byte[] fileContents = Files.readAllBytes(Paths.get(filename));
+            System.out.println("AA");
             ArrayList<Byte> input = new ArrayList<Byte>();
             for (byte b : fileContents) {
                 input.add(b);
             }
+            //System.out.println("get: " + input.size());
             return input;
         } catch (IOException ex) {
             throw ex;
@@ -58,6 +61,7 @@ public class MyReader {
         for (byte b : array) result.add(b);
         //System.out.println(_count + " " + result.size());
         start += result.size();
+        len += result.size();
         return result;
     }
 }

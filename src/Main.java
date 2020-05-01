@@ -94,7 +94,7 @@ public class Main {
         }
 
         BitArray bitArray = table.get(currentBytes);
-        String binaryString = Utils.getBinaryWithGivenWordLength(wordLength, bitArray.getIntegerValue());
+        String binaryString = Utils.getBinaryWithGivenWordLength(Utils.calcWordLength(tableSize - 1), bitArray.getIntegerValue());
         writer.write(binaryString);
         writer.endWriteStream();
     }
@@ -152,6 +152,7 @@ public class Main {
 //                    currentBytes.add(b);
             }
 
+            System.out.println(currentBytes);
             writer.write(currentBytes);
             //System.out.println(tableSize);
 
@@ -176,47 +177,47 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-//        String filename = "./files/input.exe";
-//        MyReader reader = new MyReader(filename);
-//        MyToken token = new MyToken(reader);
+        String filename = "./files/input.exe";
+        MyReader reader = new MyReader(filename);
+        MyToken token = new MyToken(reader);
+
+        MyWriter writer = new MyWriter("./archive.lzw");
+        encode(token, writer);
+        System.out.println("Compression done... Archive can be found at ./archive.lzw");
+
+        filename = "./archive.lzw";
+        reader = new MyReader(filename);
+        token = new MyToken(reader);
+
+        filename = "./files/output.exe";
+        writer = new MyWriter(filename);
+
+        decode(token, writer);
+        System.out.println("Decompression done... Output file can be found at " + filename);
+
+//        String action = args[0];
 //
-//        MyWriter writer = new MyWriter("./archive.lzw");
-//        encode(token, writer);
-//        System.out.println("Compression done... Archive can be found at ./archive.lzw");
+//        switch (action) {
+//            case "compress":
+//                String filename = args[1];
+//                MyReader reader = new MyReader(filename);
+//                MyToken token = new MyToken(reader);
 //
-//        filename = "./archive.lzw";
-//        reader = new MyReader(filename);
-//        token = new MyToken(reader);
+//                MyWriter writer = new MyWriter("./archive.lzw");
+//                encode(token, writer);
+//                System.out.println("Compression done... Archive can be found at ./archive.lzw");
+//                break;
+//            case "decompress":
+//                filename = args[1];
+//                reader = new MyReader(filename);
+//                token = new MyToken(reader);
 //
-//        filename = "./files/output.txt";
-//        writer = new MyWriter(filename);
+//                filename = args[2];
+//                writer = new MyWriter(filename);
 //
-//        decode(token, writer);
-//        System.out.println("Decompression done... Output file can be found at " + filename);
-
-        String action = args[0];
-
-        switch (action) {
-            case "compress":
-                String filename = args[1];
-                MyReader reader = new MyReader(filename);
-                MyToken token = new MyToken(reader);
-
-                MyWriter writer = new MyWriter("./archive.lzw");
-                encode(token, writer);
-                System.out.println("Compression done... Archive can be found at ./archive.lzw");
-                break;
-            case "decompress":
-                filename = args[1];
-                reader = new MyReader(filename);
-                token = new MyToken(reader);
-
-                filename = args[2];
-                writer = new MyWriter(filename);
-
-                decode(token, writer);
-                System.out.println("Decompression done... Output file can be found at " + filename);
-                break;
-        }
+//                decode(token, writer);
+//                System.out.println("Decompression done... Output file can be found at " + filename);
+//                break;
+//        }
     }
 }
