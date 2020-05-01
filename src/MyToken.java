@@ -124,7 +124,7 @@ public class MyToken {
                     return -1;
                 while (binary.length() < wordLength) {
                     binary = binary + "0";
-                    System.out.println(binary + " " + binary.length());
+                    //System.out.println(binary + " " + binary.length());
                 }
                 f = true;
                 break;
